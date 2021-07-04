@@ -31,11 +31,8 @@ public class FireHandler implements HttpHandler {
                 if (this.navyServer.getCapitaineDuBateau().stillAlive() == 1) { this.navyServer.fire(); }
                 else { System.out.println("J'AI PERDU"); exit(0); }
             }
-            else
-                System.out.println("JSON TOUT CASSER"); this.sendMessage(exchange, 400, "JSON TOUT CASSER");
-        } else {
-            this.sendMessage(exchange, 404, "Not Found");
-        }
+            else System.out.println("JSON TOUT CASSER"); this.sendMessage(exchange, 400, "JSON TOUT CASSER");
+        } else { this.sendMessage(exchange, 404, "Not Found"); }
     }
 
     private String getConsequences(int value)
