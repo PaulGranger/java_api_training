@@ -53,7 +53,6 @@ public class StartHandler implements HttpHandler {
         this.navyServer.fire();
     }
 
-
     private void sendMessage(HttpExchange exchange, int rCode, String message) throws IOException {
         exchange.sendResponseHeaders(rCode, message.length());
         try (OutputStream os = exchange.getResponseBody())

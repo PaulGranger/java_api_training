@@ -5,8 +5,9 @@ public class ConvertCell {
         int[] result = new int[2];
         char[] cellChar = cell.toCharArray();
         result[0] = getIntForChar(cellChar[0]);
-        if (cell.length() == 2)
+        if (cell.length() == 2) {
             result[1] = Integer.parseInt(String.valueOf(cellChar[1])) - 1;
+        }
         else
             result[1] = 9;
         return result;

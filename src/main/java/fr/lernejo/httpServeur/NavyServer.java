@@ -42,16 +42,15 @@ public class NavyServer {
     }
 
     public void fire() {
-        System.out.println("FIRE");
         String cell = this.getCapitaineDuBateau().chooseCell();
-        System.out.println(cell);
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder().uri(URI.create(getEnnemyInfo().get("url").replace("\"","") + "/api/game/fire?cell=" + cell)).setHeader("Accept", "application/json").setHeader("Content-Type", "application/json").build();
         try {
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
             if (response.statusCode() == 202) {
-                this.getCapitaineDuBateau().checkEnnemyMap(this.getConvertCell().convertCellIntoSeaPosition(cell));
-                if (JsonParser.parseString(response.body()).getAsJsonObject().get("shipLeft").toString().equals("false")) { System.out.println("WIN"); exit(0); }
+                if (JsonParser.parseString(response.body()).getAsJsonObject().get("shipLeft").toString().equals("false")) {
+                    System.out.println("J'AI GAGNE"); exit(0);
+                }
             }
         } catch (Exception e) { e.printStackTrace(); }
     }

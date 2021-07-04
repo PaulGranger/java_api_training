@@ -1,7 +1,5 @@
 package fr.lernejo.httpServeur;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Random;
 import java.util.UUID;
 
@@ -10,24 +8,27 @@ public class CapitaineDuBateau {
     private final int[][] sea = new int[10][10];
     private final int[][] ennemySea = new int[10][10];
     private final ConvertCell convertCell = new ConvertCell();
+    private final int[] boatSunked = new int[10];
 
     public CapitaineDuBateau(){
+        this.boatSunked[1] = 0;
         for (int i = 0; i < 10; i++)
         {
             for (int j = 0; j < 10; j++)
             {
-                this.sea[i][j]=0;
-                this.ennemySea[i][j]=0;
+                this.sea[i][j] = 0;
+                this.ennemySea[i][j] = 0;
             }
         }
-        this.sea[1][1] = 1;
+        BateauDuCapitaine bateauDuCapitaine = new BateauDuCapitaine();
+        bateauDuCapitaine.addBoat(this);
     }
 
     public int[] isTouched(int[] cell){
         int[] stringArray = new int[2];
         if (this.sea[cell[0]][cell[1]] != 9 && this.sea[cell[0]][cell[1]] != 0)
         {
-            stringArray[0] = isSinked(this.sea[cell[0]][cell[1]]);
+            stringArray[0] = isSunked(this.sea[cell[0]][cell[1]], cell[0], cell[1]) == 1 ? 1 : 0;
             stringArray[1] = stillAlive();
         }
         else
@@ -42,24 +43,25 @@ public class CapitaineDuBateau {
         Random random = new Random();
         int i = random.nextInt(10);
         int j = random.nextInt(10);
-        if (ennemySea[i][j] != 0 || ennemySea[i][j] != 9) { return this.getConvertCell().convertSeaPositionIntoString(i, j); }
+        if (this.ennemySea[i][j] != 9) {
+            this.ennemySea[i][j] = 9;
+            return this.getConvertCell().convertSeaPositionIntoString(i, j + 1);
+        }
         else { return chooseCell(); }
     }
 
     public int stillAlive()
     {
-        for (int i = 0; i < 10; i++)
+        if (this.boatSunked[1] != 5)
         {
-            for (int j = 0; j < 10; j++)
-            {
-                if (this.sea[i][j] != 0 && this.sea[i][j] != 9) { return 1; }
-            }
+            return 1;
         }
         return 0;
     }
 
-    public int isSinked(int cellValue)
+    public int isSunked(int cellValue, int c1, int c2)
     {
+        this.sea[c1][c2] = 9;
         for (int i = 0; i < 10; i++)
         {
             for (int j = 0; j < 10; j++)
@@ -67,10 +69,13 @@ public class CapitaineDuBateau {
                 if (this.sea[i][j] == cellValue) { return 0; }
             }
         }
+
+        this.boatSunkedPlusOne();
         return 1;
     }
 
-    public void checkEnnemyMap(int[] cell) { this.ennemySea[cell[0]][cell[1]] = 9; }
     public String getId() { return id; }
     public ConvertCell getConvertCell() { return convertCell; }
-}
+    public void setSeaPosition(int i, int j, int value) { this.sea[i][j] = value; }
+    public void boatSunkedPlusOne() { this.boatSunked[1] = this.boatSunked[1] + 1; }
+ }
