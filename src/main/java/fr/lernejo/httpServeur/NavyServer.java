@@ -32,6 +32,7 @@ public class NavyServer {
 
     public void startParty(int port, String url) {
         HttpClient client = HttpClient.newHttpClient();
+        System.out.println(url + "/api/game/start");
         HttpRequest request = HttpRequest.newBuilder().uri(URI.create(url + "/api/game/start")).setHeader("Accept", "application/json").setHeader("Content-Type", "application/json").POST(HttpRequest.BodyPublishers.ofString("{\"id\":\""+ this.getCapitaineDuBateau().getId() +"\", \"url\":\"http://localhost:" + port + "\", \"message\":\"Hello\"}")).build();
         try {
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());

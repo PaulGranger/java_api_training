@@ -8,7 +8,7 @@ public class Launcher {
     public static void main(String[] args) throws IOException {
         if (args.length == 1)
         {
-            new NavyServer(Integer.parseInt(args[0]));
+            NavyServer navyServer1 = new NavyServer(Integer.parseInt(args[0]));
         }
         else if (args.length == 2)
         {

@@ -9,7 +9,6 @@ public class CapitaineDuBateau {
     private final String id = UUID.randomUUID().toString();
     private final int[][] sea = new int[10][10];
     private final int[][] ennemySea = new int[10][10];
-    private final ArrayList<String> ennemyId = new ArrayList<String>(1);
     private final ConvertCell convertCell = new ConvertCell();
 
     public CapitaineDuBateau(){
@@ -25,7 +24,6 @@ public class CapitaineDuBateau {
     }
 
     public int[] isTouched(int[] cell){
-        System.out.println(Arrays.toString(cell));
         int[] stringArray = new int[2];
         if (this.sea[cell[0]][cell[1]] != 9 && this.sea[cell[0]][cell[1]] != 0)
         {

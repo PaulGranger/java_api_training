@@ -17,27 +17,18 @@ public class StartHandler implements HttpHandler {
     private final NavyServer navyServer;
 
     public StartHandler(NavyServer navyServer)
-    {
-        this.navyServer = navyServer;
-    }
+    { this.navyServer = navyServer; }
+
     @Override
     public void handle(HttpExchange exchange) throws IOException {
         if ("POST".equals(exchange.getRequestMethod()))
         {
             try {
                 JSONObject jsonObject = (JSONObject) new JSONParser().parse(new InputStreamReader(exchange.getRequestBody(), StandardCharsets.UTF_8));
-                if (jsonObject.has("id") && jsonObject.has("url") && jsonObject.has("message"))
-                {
-                    this.newParty(jsonObject, exchange);
-                }
-                else
-                {
-                    this.sendMessage(exchange, 400, "JSON TOUT CASSER");
-                }
+                if (jsonObject.has("id") && jsonObject.has("url") && jsonObject.has("message")) { this.newParty(jsonObject, exchange); }
+                else { this.sendMessage(exchange, 400, "JSON TOUT CASSER"); }
 
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
+            } catch (ParseException e) { e.printStackTrace(); }
         }
         else
         {
