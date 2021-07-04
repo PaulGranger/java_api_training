@@ -8,9 +8,12 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 
-import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
-import org.json.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.JSONObject;
+
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 public class StartHandler implements HttpHandler {
 
@@ -21,11 +24,12 @@ public class StartHandler implements HttpHandler {
 
     @Override
     public void handle(HttpExchange exchange) throws IOException {
-        if ("POST".equals(exchange.getRequestMethod()))
+        if (exchange.getRequestMethod().equals("POST"))
         {
             try {
                 JSONObject jsonObject = (JSONObject) new JSONParser().parse(new InputStreamReader(exchange.getRequestBody(), StandardCharsets.UTF_8));
-                if (jsonObject.has("id") && jsonObject.has("url") && jsonObject.has("message")) { this.newParty(jsonObject, exchange); }
+                JsonObject newJsonObject = JsonParser.parseString(jsonObject.toJSONString()).getAsJsonObject();
+                if (newJsonObject.has("id") && newJsonObject.has("url") && newJsonObject.has("message")) { this.newParty(newJsonObject, exchange); }
                 else { this.sendMessage(exchange, 400, "JSON TOUT CASSER"); }
 
             } catch (ParseException e) { e.printStackTrace(); }
@@ -36,16 +40,16 @@ public class StartHandler implements HttpHandler {
         }
     }
 
-    private void newParty(JSONObject jsonObject, HttpExchange exchange) throws IOException {
+    private void newParty(JsonObject jsonObject, HttpExchange exchange) throws IOException {
         this.navyServer.setEnnemyInfo("url", jsonObject.get("url").toString());
         this.navyServer.setEnnemyInfo("id", jsonObject.get("id").toString());
         exchange.getResponseHeaders().set("Content-Type", "application/json");
         exchange.getResponseHeaders().set("Accept", "application/json");
-        JSONObject result = new JSONObject();
-        result.put("id",this.navyServer.getCapitaineDuBateau().getId());
-        result.put("url","http://localhost:" + this.navyServer.getEnnemyInfo().get("port"));
-        result.put("message","GL LES ORDIS");
-        this.sendMessage(exchange, 202, result.toString());
+        JsonObject newJsonObject = new JsonObject();
+        newJsonObject.addProperty("id", this.navyServer.getEnnemyInfo().get("id"));
+        newJsonObject.addProperty("url",this.navyServer.getEnnemyInfo().get("url"));
+        newJsonObject.addProperty("message","GL LES ORDIS");
+        this.sendMessage(exchange, 202, newJsonObject.toString());
         this.navyServer.fire();
     }
 

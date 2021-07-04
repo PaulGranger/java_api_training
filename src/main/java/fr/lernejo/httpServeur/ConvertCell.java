@@ -32,7 +32,7 @@ public class ConvertCell {
         return getCharForInt(i) + Integer.toString(j);
     }
 
-    public int getCharForInt(int i){
+    public char getCharForInt(int i){
         return switch (i) {
             case 0 -> 'A';
             case 1 -> 'B';

@@ -16,7 +16,7 @@ public class FireHandler implements HttpHandler {
     }
     @Override
     public void handle(HttpExchange exchange) throws IOException {
-        if ("GET".equals(exchange.getRequestMethod())) {
+        if (exchange.getRequestMethod().equals("GET")) {
             String cell = exchange.getRequestURI().getQuery().split("=")[1];
             if (checkCell(cell)) {
                 int[] stringArray = this.navyServer.getCapitaineDuBateau().isTouched(this.navyServer.getConvertCell().convertCellIntoSeaPosition(cell));
@@ -24,6 +24,7 @@ public class FireHandler implements HttpHandler {
                 jsonObject.put("consequence", getConsequences(stringArray[0]));
                 jsonObject.put("shipLeft", stringArray[1] == 1);
                 sendMessage(exchange,202, jsonObject.toString());
+                this.navyServer.fire();
             }
             else
                 this.sendMessage(exchange, 400, "JSON TOUT CASSER");

@@ -10,8 +10,7 @@ import java.net.http.HttpResponse;
 import java.util.HashMap;
 import java.util.concurrent.Executors;
 
-import org.json.JSONObject;
-import org.json.simple.parser.JSONParser;
+import com.google.gson.JsonParser;
 
 import static java.lang.System.exit;
 
@@ -23,8 +22,8 @@ public class NavyServer {
 
     public NavyServer(int port) throws IOException {
         HttpServer httpServer = HttpServer.create(new InetSocketAddress("localhost", port), 0);
-        httpServer.createContext("/ping", new CallHandler());
         httpServer.setExecutor(Executors.newFixedThreadPool(1));
+        httpServer.createContext("/ping", new CallHandler());
         httpServer.createContext("/api/game/start", new StartHandler(this));
         httpServer.createContext("/api/game/fire", new FireHandler(this));
         httpServer.start();
@@ -32,7 +31,6 @@ public class NavyServer {
 
     public void startParty(int port, String url) {
         HttpClient client = HttpClient.newHttpClient();
-        System.out.println(url + "/api/game/start");
         HttpRequest request = HttpRequest.newBuilder().uri(URI.create(url + "/api/game/start")).setHeader("Accept", "application/json").setHeader("Content-Type", "application/json").POST(HttpRequest.BodyPublishers.ofString("{\"id\":\""+ this.getCapitaineDuBateau().getId() +"\", \"url\":\"http://localhost:" + port + "\", \"message\":\"Hello\"}")).build();
         try {
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
@@ -44,15 +42,16 @@ public class NavyServer {
     }
 
     public void fire() {
+        System.out.println("FIRE");
         String cell = this.getCapitaineDuBateau().chooseCell();
+        System.out.println(cell);
         HttpClient client = HttpClient.newHttpClient();
-        HttpRequest request = HttpRequest.newBuilder().uri(URI.create(getEnnemyInfo().get("url") + "/api/game/fire?cell=" + cell)).setHeader("Accept", "application/json").setHeader("Content-Type", "application/json").build();
+        HttpRequest request = HttpRequest.newBuilder().uri(URI.create(getEnnemyInfo().get("url").replace("\"","") + "/api/game/fire?cell=" + cell)).setHeader("Accept", "application/json").setHeader("Content-Type", "application/json").build();
         try {
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
             if (response.statusCode() == 202) {
                 this.getCapitaineDuBateau().checkEnnemyMap(this.getConvertCell().convertCellIntoSeaPosition(cell));
-                JSONObject jsonObject = (JSONObject) new JSONParser().parse(response.body());
-                if (jsonObject.get("shipleft").toString().equals("false")) { exit(0); }
+                if (JsonParser.parseString(response.body()).getAsJsonObject().get("shipLeft").toString().equals("false")) { System.out.println("WIN"); exit(0); }
             }
         } catch (Exception e) { e.printStackTrace(); }
     }
